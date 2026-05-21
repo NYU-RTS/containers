@@ -111,8 +111,6 @@ for user in $(ls /home/); do
 done
 EOR
 
-COPY --from=build /root/rpmbuild/RPMS/**/*.rpm /tmp/
-
 RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked <<EOR
 # Install Dependencies
 set -xeuo pipefail
@@ -128,6 +126,8 @@ dnf -q -y install --setopt='install_weak_deps=False' \
 dnf -q -y install --setopt='install_weak_deps=False' \
   procps-ng iputils ncurses
 EOR
+
+COPY --from=build /root/rpmbuild/RPMS/**/*.rpm /tmp/
 
 ################################################################################
 FROM base AS base-extra
