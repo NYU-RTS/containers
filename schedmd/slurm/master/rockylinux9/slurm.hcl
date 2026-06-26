@@ -4,5 +4,4 @@
 ################################################################################
 
 slurm_version = "master"
-slurm_version_micro = "1"
 linux_flavor = "rockylinux9"

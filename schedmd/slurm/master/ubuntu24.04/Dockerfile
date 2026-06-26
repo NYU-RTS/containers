@@ -5,17 +5,16 @@
 ################################################################################
 
 ARG SLURM_VERSION=master
-ARG SLURM_VERSION_MICRO=1
+ARG SLURM_VERSION_ARCHIVE=master
 ARG SLURM_DIR=slurm
 ARG PARENT_IMAGE=ubuntu:24.04
 
 ################################################################################
 FROM alpine:latest AS slurm-src
 
-ARG SLURM_VERSION
-ARG SLURM_VERSION_MICRO
+ARG SLURM_VERSION_ARCHIVE
 ARG SLURM_DIR
-ARG SLURM_TAR="${SLURM_VERSION}.tar.gz"
+ARG SLURM_TAR="${SLURM_VERSION_ARCHIVE}.tar.gz"
 
 WORKDIR /workspace/
 
