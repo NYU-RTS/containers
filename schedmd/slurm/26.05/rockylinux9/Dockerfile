@@ -21,7 +21,7 @@ WORKDIR /workspace/
 
 RUN apk add -q --no-cache tar
 
-ADD https://github.com/SchedMD/slurm/archive/refs/tags/${SLURM_TAR} ${SLURM_TAR}
+ADD https://github.com/SchedMD/slurm/archive/${SLURM_TAR} ${SLURM_TAR}
 
 RUN \
   mkdir -p ${SLURM_DIR} && \
