@@ -121,6 +121,18 @@ function configure_pam_slurm() {
 	sed -i "s|^${search_line}|${pam_slurm_adopt} ${PAM_SLURM_ADOPT_OPTIONS}\n&|" /etc/pam.d/sshd
 }
 
+function entrypointd() {
+	if [ -d /usr/local/entrypoint.d/ ]; then
+		echo "[entrypoint.d] Files: $(ls -laF /usr/local/entrypoint.d/)"
+	fi
+	for file in /usr/local/entrypoint.d/*; do
+		if [ -f "$file" ] && [ -x "$file" ]; then
+			echo "[entrypoint.d] Run: $file"
+			"$file"
+		fi
+	done
+}
+
 function main() {
 	mkdir -p /run/slurm/
 	mkdir -p /var/spool/slurmd/
@@ -153,6 +165,8 @@ function main() {
 	if [ -n "$POD_TOPOLOGY" ]; then
 		addConfItem "Topology=${POD_TOPOLOGY}"
 	fi
+
+	entrypointd
 
 	exec supervisord -c /etc/supervisor/supervisord.conf
 }
