@@ -187,7 +187,8 @@ set -xeuo pipefail
 dnf -q -y install --setopt='install_weak_deps=False' \
   gawk socat \
   openssh-server \
-  authselect sssd sssd-ad sssd-ldap \
+  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
+  krb5-pkinit \
   ./slurm-devel-[0-9]*.rpm \
   ./slurm-libpmi-[0-9]*.rpm \
   ./slurm-pam_slurm-[0-9]*.rpm \
@@ -324,7 +325,8 @@ set -xeuo pipefail
 dnf -q -y install --setopt='install_weak_deps=False' \
   socat \
   openssh-server \
-  authselect sssd sssd-ad sssd-ldap
+  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
+  krb5-pkinit
 # Configure
 mkdir -p /etc/authselect
 authselect select sssd with-mkhomedir --force
