@@ -19,15 +19,17 @@ context = "${slurm_dir}/${linux_flavor}"
 
 ################################################################################
 
+_slurm_regex_version = "^(?<major>[0-9]+)\\.(?<minor>[0-9]+)\\.(?<patch>[0-9]+)(?:-(?<rev>.+))?$"
+
 function "slurm_semantic_version" {
   params = [version]
-  result = regex("^(?<major>[0-9]+)\\.(?<minor>[0-9]+)\\.(?<patch>[0-9]+)(?:-(?<rev>.+))?$", version)
+  result = regex(_slurm_regex_version, version)
 }
 
 function "slurm_version" {
   params = [version]
   result = (
-    length(regexall("^(?<major>[0-9]+)\\.(?<minor>[0-9]+)\\.(?<patch>[0-9]+)(?:-(?<rev>.+))?$", version)) > 0
+    length(regexall(_slurm_regex_version, version)) > 0
       ? format("%s.%s", slurm_semantic_version(version)["major"], slurm_semantic_version(version)["minor"])
       : version
   )
@@ -48,7 +50,7 @@ function "format_tag" {
 function "slurm_version_archive" {
   params = [version]
   result = (
-    length(regexall("^(?<major>[0-9]+)\\.(?<minor>[0-9]+)\\.(?<patch>[0-9]+)(?:-(?<rev>.+))?$", version)) > 0
+    length(regexall(_slurm_regex_version, version)) > 0
       ? format("slurm-%s-%s-%s-%s",
           slurm_semantic_version(version)["major"],
           slurm_semantic_version(version)["minor"],
