@@ -19,16 +19,18 @@ context = "${slurm_dir}/${linux_flavor}"
 
 ################################################################################
 
+_slurm_regex_version = "^(?<major>[0-9]+)\\.(?<minor>[0-9]+)\\.(?<patch>[0-9]+)(?:-(?<rev>.+))?$"
+
 function "slurm_semantic_version" {
   params = [version]
-  result = regex("^(?<major>[0-9]+)\\.(?<minor>[0-9]+)\\.(?<patch>[0-9]+)(?:-(?<rev>.+))?$", "${version}")
+  result = regex(_slurm_regex_version, version)
 }
 
 function "slurm_version" {
   params = [version]
   result = (
-    length(regexall("^(?<major>[0-9]+)\\.(?<minor>[0-9]+)\\.(?<patch>[0-9]+)(?:-(?<rev>.+))?$", "${version}")) > 0
-      ? format("%s.%s", "${slurm_semantic_version("${version}")["major"]}", "${slurm_semantic_version("${version}")["minor"]}")
+    length(regexall(_slurm_regex_version, version)) > 0
+      ? format("%s.%s", slurm_semantic_version(version)["major"], slurm_semantic_version(version)["minor"])
       : version
   )
 }
@@ -38,12 +40,32 @@ function "format_tag" {
   result = format("%s:%s", join("/", compact([registry, stage])), join("-", compact([version, flavor, suffix])))
 }
 
+# GitHub archive ref derived from SLURM_VERSION.
+# Micro comes from the -<micro> suffix when present; otherwise defaults to 1.
+#   VERSION       -> ARCHIVE
+#   master        -> master
+#   26.05.1       -> slurm-26-05-1-1
+#   26.05.0-2     -> slurm-26-05-0-2
+#   26.05.0-0rc1  -> slurm-26-05-0-0rc1
+function "slurm_version_archive" {
+  params = [version]
+  result = (
+    length(regexall(_slurm_regex_version, version)) > 0
+      ? format("slurm-%s-%s-%s-%s",
+          slurm_semantic_version(version)["major"],
+          slurm_semantic_version(version)["minor"],
+          slurm_semantic_version(version)["patch"],
+          coalesce(try(slurm_semantic_version(version)["rev"], null), "1"))
+      : version
+  )
+}
+
 ################################################################################
 
 target "_slurm" {
   args = {
     SLURM_VERSION = slurm_version
-    SLURM_VERSION_MICRO = slurm_version_micro
+    SLURM_VERSION_ARCHIVE = slurm_version_archive(slurm_version)
   }
   labels = {
     # Ref: https://github.com/opencontainers/image-spec/blob/v1.0/annotations.md
@@ -358,7 +380,7 @@ variable "GIT_BRANCH" {
 function "git_branch" {
   params = [version]
   result = (
-    length(regexall("^(?<major>[0-9]+)\\.(?<minor>[0-9]+)\\.(?<patch>[0-9]+)(?:-(?<rev>.+))?$", "${version}")) > 0
+    length(regexall("^(?<major>[0-9]+)\\.(?<minor>[0-9]+)\\.(?<patch>[0-9]+)(?:-(?<rev>.+))?$", version)) > 0
       ? format("slurm-%s", slurm_version(version))
       : version
   )
