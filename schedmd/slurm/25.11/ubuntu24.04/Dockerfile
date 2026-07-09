@@ -207,6 +207,7 @@ sed -i -E "s/^group:[[:space:]]+/&slurm /g" /etc/nsswitch.conf
 mkdir -p /etc/authselect
 authselect select sssd with-mkhomedir --force
 rm -f /etc/ssh/ssh_host_*
+mkdir -p /usr/local/entrypoint.d/
 EOR
 
 COPY files/etc/supervisor/supervisord.conf /etc/supervisor/
@@ -366,6 +367,7 @@ apt-get -qq -y install --no-install-recommends \
 mkdir -p /etc/authselect
 authselect select sssd with-mkhomedir --force
 rm -f /etc/ssh/ssh_host_*
+mkdir -p /usr/local/entrypoint.d/
 EOR
 
 COPY files/etc/supervisor/supervisord.conf /etc/supervisor/

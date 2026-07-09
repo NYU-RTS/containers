@@ -15,10 +15,12 @@
     - [Environment](#environment-2)
   - [slurmd](#slurmd)
     - [Environment](#environment-3)
+    - [Miscellaneous](#miscellaneous)
   - [sackd](#sackd)
     - [Environment](#environment-4)
   - [login](#login)
     - [Environment](#environment-5)
+    - [Miscellaneous](#miscellaneous-1)
 
 <!-- mdformat-toc end -->
 
@@ -88,6 +90,12 @@ docker pull ghcr.io/slinkyproject/slurmd:26.05-ubuntu26.04
 | POD_MEMORY              | Used to calculate slurmd `MemSpecLimit`.     |
 | POD_TOPOLOGY            | Used for slurmd dynamic topology.            |
 
+### Miscellaneous
+
+The image `entrypoint.sh` script will glob and run all executable files in
+`/usr/local/entrypoint.d/` before starting supervisord. `entrypoint.d/` can be
+used to extend the `entrypoint.sh` without direct modification.
+
 ## sackd
 
 Pull a [sackd] image.
@@ -117,6 +125,12 @@ docker pull ghcr.io/slinkyproject/login:26.05-ubuntu26.04
 | SACKD_OPTIONS | Arguments passed to `sackd`. |
 | SSHD_OPTIONS  | Arguments passed to `sshd`.  |
 | SSSD_OPTIONS  | Arguments passed to `sssd`.  |
+
+### Miscellaneous
+
+The image `entrypoint.sh` script will glob and run all executable files in
+`/usr/local/entrypoint.d/` before starting supervisord. `entrypoint.d/` can be
+used to extend the `entrypoint.sh` without direct modification.
 
 <!-- Links -->
 

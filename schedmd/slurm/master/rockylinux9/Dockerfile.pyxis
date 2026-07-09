@@ -117,10 +117,9 @@ mkdir -m 777 -p /usr/share/enroot/enroot-data/
 mkdir -m 755 -p /run/enroot/
 mkdir -m 644 -p /etc/slurm/plugstack.conf.d/
 ln -s /usr/share/pyxis/pyxis.conf /etc/slurm/plugstack.conf.d/pyxis.conf
-# Fix NVIDIA proc mount for GPUs
-sed -i '2i mount -t proc none /proc 2>/dev/null || true' /usr/local/bin/entrypoint.sh
-sed -i '2i mount -t tmpfs tmpfs /tmp 2>/dev/null || true' /usr/local/bin/entrypoint.sh
 EOR
+
+COPY files/usr/local/entrypoint.d/90-mounts.sh /usr/local/entrypoint.d/
 
 ADD https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo /etc/yum.repos.d/nvidia-container-toolkit.repo
 
@@ -164,10 +163,9 @@ mkdir -m 777 -p /usr/share/enroot/enroot-data/
 mkdir -m 755 -p /run/enroot/
 mkdir -m 644 -p /etc/slurm/plugstack.conf.d/
 ln -s /usr/share/pyxis/pyxis.conf /etc/slurm/plugstack.conf.d/pyxis.conf
-# Fix NVIDIA proc mount for GPUs
-sed -i '2i mount -t proc none /proc 2>/dev/null || true' /usr/local/bin/entrypoint.sh
-sed -i '2i mount -t tmpfs tmpfs /tmp 2>/dev/null || true' /usr/local/bin/entrypoint.sh
 EOR
+
+COPY files/usr/local/entrypoint.d/90-mounts.sh /usr/local/entrypoint.d/
 
 ADD https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo /etc/yum.repos.d/nvidia-container-toolkit.repo
 
