@@ -4,10 +4,10 @@
 
 ################################################################################
 
-ARG SLURM_VERSION=25.11.6
-ARG SLURM_VERSION_ARCHIVE=slurm-25-11-6-1
+ARG SLURM_VERSION=master
+ARG SLURM_VERSION_ARCHIVE=master
 ARG SLURM_DIR=slurm
-ARG PARENT_IMAGE=rockylinux/rockylinux:9
+ARG PARENT_IMAGE=rockylinux/rockylinux:10
 
 ################################################################################
 FROM alpine:latest AS slurm-src
@@ -84,6 +84,8 @@ EOR
 ################################################################################
 FROM ${PARENT_IMAGE} AS base
 
+ARG TARGETARCH
+
 SHELL ["bash", "-c"]
 
 ARG SLURM_VERSION
@@ -111,6 +113,8 @@ for user in $(ls /home/); do
 done
 EOR
 
+ADD --chmod=0755 https://github.com/krallin/tini/releases/latest/download/tini-static-${TARGETARCH} /usr/local/bin/tini
+
 RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked <<EOR
 # Install Dependencies
 set -xeuo pipefail
@@ -121,7 +125,7 @@ dnf config-manager --enable crb
 dnf -q -y upgrade
 # Init System
 dnf -q -y install --setopt='install_weak_deps=False' \
-  supervisor tini
+  supervisor
 # Debug
 dnf -q -y install --setopt='install_weak_deps=False' \
   procps-ng iputils ncurses
@@ -298,7 +302,6 @@ dnf -q -y install --setopt='install_weak_deps=False' \
 rm *.rpm
 # Prepare Directories
 mkdir -p /run/slurm/
-chown ${SLURM_USER}:${SLURM_USER} /run/slurm
 EOR
 
 COPY files/etc/supervisord.conf /etc/

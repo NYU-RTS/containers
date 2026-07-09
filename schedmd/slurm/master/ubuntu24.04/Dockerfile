@@ -94,8 +94,6 @@ for user in $(ls /home/); do
 done
 EOR
 
-COPY --from=build /tmp/*.deb /tmp/*.ddeb /tmp/
-
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   --mount=type=cache,target=/var/lib/apt,sharing=locked <<EOR
 # Install Dependencies
@@ -109,6 +107,8 @@ apt-get -qq -y install --no-install-recommends \
 apt-get -qq -y install --no-install-recommends \
   procps iputils-ping ncurses-bin
 EOR
+
+COPY --from=build /tmp/*.deb /tmp/*.ddeb /tmp/
 
 ################################################################################
 FROM base AS base-extra
