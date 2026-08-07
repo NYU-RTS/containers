@@ -75,6 +75,13 @@ repos:
           - --severity=warning
   - repo: local
     hooks:
+      - id: make-validate-bake
+        name: Make Validate Bake
+        entry: make validate-bake
+        language: system
+        pass_filenames: false
+        require_serial: true
+        files: ^(Makefile|schedmd/slurm/(docker-bake\.hcl|[^/]+/[^/]+/slurm\.hcl))$
       - id: make-generate-docs
         name: Make Generate Docs
         entry: make generate-docs
