@@ -67,6 +67,17 @@ $(PANDOC): $(LOCALBIN)
 	fi
 
 ##@ Development
+.PHONY: validate-bake
+validate-bake: ## Validate all Slurm bake configurations.
+	@cd schedmd/slurm && \
+	for config in */*/slurm.hcl; do \
+		echo "Validating $$config"; \
+		docker buildx bake \
+			--file docker-bake.hcl \
+			--file "$$config" \
+			all --print >/dev/null || exit 1; \
+	done
+
 .PHONY: generate-docs
 generate-docs: pandoc-bin
 	$(PANDOC) --quiet README.md -o docs/index.rst
