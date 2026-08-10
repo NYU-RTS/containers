@@ -209,10 +209,10 @@ apt-get -qq -y install --no-install-recommends --fix-broken \
 rm *.deb && rm *.ddeb
 # Configure
 mkdir -p /var/spool/slurmd/
-sed -i -E "s/^passwd:[[:space:]]+/&slurm /g" /etc/nsswitch.conf
-sed -i -E "s/^group:[[:space:]]+/&slurm /g" /etc/nsswitch.conf
 mkdir -p /etc/authselect
 authselect select sssd with-mkhomedir --force
+sed -i -E "s/^passwd:[[:space:]]+/&slurm /g" /etc/nsswitch.conf
+sed -i -E "s/^group:[[:space:]]+/&slurm /g" /etc/nsswitch.conf
 rm -f /etc/ssh/ssh_host_*
 mkdir -p /usr/local/entrypoint.d/
 EOR

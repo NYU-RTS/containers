@@ -206,10 +206,10 @@ dnf -q -y install --setopt='install_weak_deps=False' \
 rm *.rpm
 # Configure
 mkdir -p /var/spool/slurmd/
-sed -i -E "s/^passwd:[[:space:]]+/&slurm /g" /etc/nsswitch.conf
-sed -i -E "s/^group:[[:space:]]+/&slurm /g" /etc/nsswitch.conf
 mkdir -p /etc/authselect
 authselect select sssd with-mkhomedir --force
+sed -i -E "s/^passwd:[[:space:]]+/&slurm /g" /etc/nsswitch.conf
+sed -i -E "s/^group:[[:space:]]+/&slurm /g" /etc/nsswitch.conf
 rm -f /etc/ssh/ssh_host_*
 mkdir -p /usr/local/entrypoint.d/
 EOR
