@@ -172,7 +172,7 @@ COPY files/usr/local/bin/fakesystemd.sh /usr/local/bin/
 COPY files/usr/local/bin/slurmctld-entrypoint.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 6817/tcp
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 ################################################################################
 FROM base-extra AS slurmd
@@ -229,7 +229,7 @@ COPY files/usr/local/bin/fakesystemd.sh /usr/local/bin/
 COPY files/usr/local/bin/slurmd-entrypoint.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 6818/tcp 22/tcp
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 ################################################################################
 FROM base AS slurmdbd
@@ -257,7 +257,7 @@ rm *.deb && rm *.ddeb
 EOR
 
 EXPOSE 6819/tcp
-ENTRYPOINT ["tini", "-g", "--", "slurmdbd", "-D"]
+ENTRYPOINT ["/usr/bin/tini", "-g", "--", "/usr/sbin/slurmdbd", "-D"]
 
 ################################################################################
 FROM base AS slurmrestd
@@ -285,7 +285,7 @@ rm *.deb && rm *.ddeb
 EOR
 
 EXPOSE 6820/tcp
-ENTRYPOINT ["tini", "-g", "--", "slurmrestd"]
+ENTRYPOINT ["/usr/bin/tini", "-g", "--", "/usr/sbin/slurmrestd"]
 CMD ["0.0.0.0:6820"]
 
 ################################################################################
@@ -348,7 +348,7 @@ COPY \
 COPY files/usr/local/bin/fakesystemd.sh /usr/local/bin/
 COPY files/usr/local/bin/sackd-entrypoint.sh /usr/local/bin/entrypoint.sh
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 ################################################################################
 FROM sackd AS login
@@ -390,4 +390,4 @@ COPY files/usr/local/bin/fakesystemd.sh /usr/local/bin/
 COPY files/usr/local/bin/login-entrypoint.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 22/tcp
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
