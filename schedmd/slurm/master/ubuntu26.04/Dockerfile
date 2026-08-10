@@ -145,6 +145,8 @@ set -xeuo pipefail
 apt-get -qq update
 apt-get -qq -y install --no-install-recommends --fix-broken \
   socat \
+  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
+  krb5-pkinit libpam-sss libnss-sss \
   ./slurm-smd-client_[0-9]*.deb \
   ./slurm-smd-client-dbgsym_[0-9]*.ddeb \
   ./slurm-smd-dev_[0-9]*.deb \
@@ -154,12 +156,16 @@ apt-get -qq -y install --no-install-recommends --fix-broken \
   ./slurm-smd_[0-9]*.deb \
   ./slurm-smd-dbgsym_[0-9]*.ddeb
 rm *.deb && rm *.ddeb
+# Configure
+mkdir -p /etc/authselect
+authselect select sssd --force
 EOR
 
 COPY files/etc/supervisor/supervisord.conf /etc/supervisor/
 COPY \
   files/etc/supervisor/conf.d/slurmctld.conf \
-  files/etc/supervisor/conf.d/fakesystemd.conf \
+  files/etc/supervisor/conf.d/fakesystemd-slurm.conf \
+  files/etc/supervisor/conf.d/sssd.conf \
   /etc/supervisor/conf.d/
 COPY files/usr/local/bin/fakesystemd.sh /usr/local/bin/
 COPY files/usr/local/bin/slurmctld-entrypoint.sh /usr/local/bin/entrypoint.sh
