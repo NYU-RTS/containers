@@ -138,7 +138,6 @@ function main() {
 	mkdir -p /var/spool/slurmd/
 	mkdir -p /run/sshd/
 	chmod 0755 /run/sshd/
-	mkdir -p /run/slurm/
 
 	ssh-keygen -A
 	configure_pam_slurm
