@@ -158,7 +158,8 @@ apt-get -qq -y install --no-install-recommends --fix-broken \
 rm *.deb && rm *.ddeb
 # Configure
 mkdir -p /etc/authselect
-authselect select sssd --force
+authselect create-profile slinky -b sssd
+authselect select custom/slinky --force
 EOR
 
 COPY files/etc/supervisor/supervisord.conf /etc/supervisor/
@@ -210,9 +211,9 @@ rm *.deb && rm *.ddeb
 # Configure
 mkdir -p /var/spool/slurmd/
 mkdir -p /etc/authselect
-authselect select sssd with-mkhomedir --force
-sed -i -E "s/^passwd:[[:space:]]+/&slurm /g" /etc/nsswitch.conf
-sed -i -E "s/^group:[[:space:]]+/&slurm /g" /etc/nsswitch.conf
+authselect create-profile slinky -b sssd
+sed -i -E '/^(passwd|group):/ { /slurm/! s/(files)/\1 slurm/g }' /etc/authselect/custom/slinky/nsswitch.conf
+authselect select custom/slinky with-mkhomedir --force
 rm -f /etc/ssh/ssh_host_*
 mkdir -p /usr/local/entrypoint.d/
 EOR
@@ -371,7 +372,8 @@ apt-get -qq -y install --no-install-recommends \
   krb5-pkinit libpam-sss libnss-sss
 # Configure
 mkdir -p /etc/authselect
-authselect select sssd with-mkhomedir --force
+authselect create-profile slinky -b sssd
+authselect select custom/slinky with-mkhomedir --force
 rm -f /etc/ssh/ssh_host_*
 mkdir -p /usr/local/entrypoint.d/
 EOR

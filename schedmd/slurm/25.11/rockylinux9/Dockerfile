@@ -162,7 +162,8 @@ dnf -q -y install --setopt='install_weak_deps=False' \
 rm *.rpm
 # Configure
 mkdir -p /etc/authselect
-authselect select sssd --force
+authselect create-profile slinky -b sssd
+authselect select custom/slinky --force
 EOR
 
 COPY files/etc/supervisord.conf /etc/
@@ -203,9 +204,9 @@ rm *.rpm
 # Configure
 mkdir -p /var/spool/slurmd/
 mkdir -p /etc/authselect
-authselect select sssd with-mkhomedir --force
-sed -i -E "s/^passwd:[[:space:]]+/&slurm /g" /etc/nsswitch.conf
-sed -i -E "s/^group:[[:space:]]+/&slurm /g" /etc/nsswitch.conf
+authselect create-profile slinky -b sssd
+sed -i -E '/^(passwd|group):/ { /slurm/! s/(files)/\1 slurm/g }' /etc/authselect/custom/slinky/nsswitch.conf
+authselect select custom/slinky with-mkhomedir --force
 rm -f /etc/ssh/ssh_host_*
 mkdir -p /usr/local/entrypoint.d/
 EOR
@@ -336,7 +337,8 @@ dnf -q -y install --setopt='install_weak_deps=False' \
   krb5-pkinit
 # Configure
 mkdir -p /etc/authselect
-authselect select sssd with-mkhomedir --force
+authselect create-profile slinky -b sssd
+authselect select custom/slinky with-mkhomedir --force
 rm -f /etc/ssh/ssh_host_*
 mkdir -p /usr/local/entrypoint.d/
 EOR
