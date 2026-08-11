@@ -146,7 +146,7 @@ apt-get -qq update
 apt-get -qq -y install --no-install-recommends --fix-broken \
   socat \
   authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
-  krb5-pkinit libpam-sss libnss-sss \
+  krb5-pkinit \
   ./slurm-smd-client_[0-9]*.deb \
   ./slurm-smd-client-dbgsym_[0-9]*.ddeb \
   ./slurm-smd-dev_[0-9]*.deb \
@@ -194,7 +194,7 @@ apt-get -qq -y install --no-install-recommends --fix-broken \
   gawk socat \
   openssh-server \
   authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
-  krb5-pkinit libpam-sss libnss-sss \
+  krb5-pkinit \
   ./slurm-smd-client_[0-9]*.deb \
   ./slurm-smd-client-dbgsym_[0-9]*.ddeb \
   ./slurm-smd-dev_[0-9]*.deb \
@@ -369,7 +369,7 @@ apt-get -qq -y install --no-install-recommends \
   socat \
   openssh-server \
   authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
-  krb5-pkinit libpam-sss libnss-sss
+  krb5-pkinit
 # Configure
 mkdir -p /etc/authselect
 authselect create-profile slinky -b sssd
