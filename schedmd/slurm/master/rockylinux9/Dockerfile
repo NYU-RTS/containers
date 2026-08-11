@@ -155,7 +155,7 @@ RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked <<EOR
 set -xeuo pipefail
 dnf -q -y install --setopt='install_weak_deps=False' \
   socat \
-  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
+  authselect sssd sssd-ad sssd-idp sssd-ipa sssd-krb5 sssd-ldap \
   krb5-pkinit \
   ./slurm-slurmctld-[0-9]*.rpm \
   ./slurm-[0-9]*.rpm
@@ -193,7 +193,7 @@ set -xeuo pipefail
 dnf -q -y install --setopt='install_weak_deps=False' \
   gawk socat \
   openssh-server \
-  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
+  authselect sssd sssd-ad sssd-idp sssd-ipa sssd-krb5 sssd-ldap \
   krb5-pkinit \
   ./slurm-devel-[0-9]*.rpm \
   ./slurm-libpmi-[0-9]*.rpm \
@@ -332,7 +332,7 @@ set -xeuo pipefail
 dnf -q -y install --setopt='install_weak_deps=False' \
   socat \
   openssh-server \
-  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
+  authselect sssd sssd-ad sssd-idp sssd-ipa sssd-krb5 sssd-ldap \
   krb5-pkinit
 # Configure
 mkdir -p /etc/authselect

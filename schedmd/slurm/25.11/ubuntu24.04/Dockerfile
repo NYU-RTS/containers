@@ -145,7 +145,7 @@ set -xeuo pipefail
 apt-get -qq update
 apt-get -qq -y install --no-install-recommends --fix-broken \
   socat \
-  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
+  authselect sssd sssd-ad sssd-idp sssd-ipa sssd-krb5 sssd-ldap \
   krb5-pkinit \
   ./slurm-smd-client_[0-9]*.deb \
   ./slurm-smd-client-dbgsym_[0-9]*.ddeb \
@@ -193,7 +193,7 @@ apt-get -qq update
 apt-get -qq -y install --no-install-recommends --fix-broken \
   gawk socat \
   openssh-server \
-  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
+  authselect sssd sssd-ad sssd-idp sssd-ipa sssd-krb5 sssd-ldap \
   krb5-pkinit \
   ./slurm-smd-client_[0-9]*.deb \
   ./slurm-smd-client-dbgsym_[0-9]*.ddeb \
@@ -369,7 +369,7 @@ apt-get -qq update
 apt-get -qq -y install --no-install-recommends \
   socat \
   openssh-server \
-  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
+  authselect sssd sssd-ad sssd-idp sssd-ipa sssd-krb5 sssd-ldap \
   krb5-pkinit
 # Configure
 mkdir -p /etc/authselect
