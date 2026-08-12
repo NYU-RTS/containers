@@ -41,6 +41,22 @@ docker pull ghcr.io/slinkyproject/slurmctld:26.05-ubuntu26.04
 | Variable          | Description                      |
 | ----------------- | -------------------------------- |
 | SLURMCTLD_OPTIONS | Arguments passed to `slurmctld`. |
+| SSSD_OPTIONS      | Arguments passed to `sssd`.      |
+
+The slurmctld image bundles SSSD as an NSS source so `slurmctld` can resolve
+directory users and groups (e.g. reservation and partition access control lists)
+via `getpwnam`/`getgrnam`.
+
+To use SSSD:
+
+1. Mount `sssd.conf` at `/etc/sssd/sssd.conf` (owned by `root`, mode `0600`).
+1. Start the container as root. `sssd` requires root. If a Kubernetes
+   securityContext forces a non-root UID (for example `runAsNonRoot: true` /
+   `runAsUser: 401`), override it when enabling SSSD.
+
+Without a usable `sssd.conf` (or without root), supervisord will mark `sssd`
+FATAL after retries. That is expected; `slurmctld` continues and resolves only
+local `/etc/passwd` entries.
 
 ## slurmdbd
 

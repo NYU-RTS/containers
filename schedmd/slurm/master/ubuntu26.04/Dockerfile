@@ -145,6 +145,8 @@ set -xeuo pipefail
 apt-get -qq update
 apt-get -qq -y install --no-install-recommends --fix-broken \
   socat \
+  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
+  krb5-pkinit libpam-sss libnss-sss \
   ./slurm-smd-client_[0-9]*.deb \
   ./slurm-smd-client-dbgsym_[0-9]*.ddeb \
   ./slurm-smd-dev_[0-9]*.deb \
@@ -154,12 +156,17 @@ apt-get -qq -y install --no-install-recommends --fix-broken \
   ./slurm-smd_[0-9]*.deb \
   ./slurm-smd-dbgsym_[0-9]*.ddeb
 rm *.deb && rm *.ddeb
+# Configure
+mkdir -p /etc/authselect
+authselect create-profile slinky -b sssd
+authselect select custom/slinky --force
 EOR
 
 COPY files/etc/supervisor/supervisord.conf /etc/supervisor/
 COPY \
   files/etc/supervisor/conf.d/slurmctld.conf \
-  files/etc/supervisor/conf.d/fakesystemd.conf \
+  files/etc/supervisor/conf.d/fakesystemd-slurm.conf \
+  files/etc/supervisor/conf.d/sssd.conf \
   /etc/supervisor/conf.d/
 COPY files/usr/local/bin/fakesystemd.sh /usr/local/bin/
 COPY files/usr/local/bin/slurmctld-entrypoint.sh /usr/local/bin/entrypoint.sh
@@ -203,10 +210,10 @@ apt-get -qq -y install --no-install-recommends --fix-broken \
 rm *.deb && rm *.ddeb
 # Configure
 mkdir -p /var/spool/slurmd/
-sed -i -E "s/^passwd:[[:space:]]+/&slurm /g" /etc/nsswitch.conf
-sed -i -E "s/^group:[[:space:]]+/&slurm /g" /etc/nsswitch.conf
 mkdir -p /etc/authselect
-authselect select sssd with-mkhomedir --force
+authselect create-profile slinky -b sssd
+sed -i -E '/^(passwd|group):/ { /slurm/! s/(files)/\1 slurm/g }' /etc/authselect/custom/slinky/nsswitch.conf
+authselect select custom/slinky with-mkhomedir --force
 rm -f /etc/ssh/ssh_host_*
 mkdir -p /usr/local/entrypoint.d/
 EOR
@@ -365,7 +372,8 @@ apt-get -qq -y install --no-install-recommends \
   krb5-pkinit libpam-sss libnss-sss
 # Configure
 mkdir -p /etc/authselect
-authselect select sssd with-mkhomedir --force
+authselect create-profile slinky -b sssd
+authselect select custom/slinky with-mkhomedir --force
 rm -f /etc/ssh/ssh_host_*
 mkdir -p /usr/local/entrypoint.d/
 EOR
