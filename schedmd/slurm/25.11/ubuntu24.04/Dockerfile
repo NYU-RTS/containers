@@ -145,8 +145,8 @@ set -xeuo pipefail
 apt-get -qq update
 apt-get -qq -y install --no-install-recommends --fix-broken \
   socat \
-  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
-  krb5-pkinit libpam-sss libnss-sss \
+  authselect sssd sssd-ad sssd-idp sssd-ipa sssd-krb5 sssd-ldap \
+  krb5-pkinit \
   ./slurm-smd-client_[0-9]*.deb \
   ./slurm-smd-client-dbgsym_[0-9]*.ddeb \
   ./slurm-smd-dev_[0-9]*.deb \
@@ -165,14 +165,14 @@ EOR
 COPY files/etc/supervisor/supervisord.conf /etc/supervisor/
 COPY \
   files/etc/supervisor/conf.d/slurmctld.conf \
-  files/etc/supervisor/conf.d/fakesystemd-slurm.conf \
+  files/etc/supervisor/conf.d/fakesystemd.conf \
   files/etc/supervisor/conf.d/sssd.conf \
   /etc/supervisor/conf.d/
 COPY files/usr/local/bin/fakesystemd.sh /usr/local/bin/
 COPY files/usr/local/bin/slurmctld-entrypoint.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 6817/tcp
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 ################################################################################
 FROM base-extra AS slurmd
@@ -193,8 +193,8 @@ apt-get -qq update
 apt-get -qq -y install --no-install-recommends --fix-broken \
   gawk socat \
   openssh-server \
-  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
-  krb5-pkinit libpam-sss libnss-sss \
+  authselect sssd sssd-ad sssd-idp sssd-ipa sssd-krb5 sssd-ldap \
+  krb5-pkinit \
   ./slurm-smd-client_[0-9]*.deb \
   ./slurm-smd-client-dbgsym_[0-9]*.ddeb \
   ./slurm-smd-dev_[0-9]*.deb \
@@ -229,7 +229,7 @@ COPY files/usr/local/bin/fakesystemd.sh /usr/local/bin/
 COPY files/usr/local/bin/slurmd-entrypoint.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 6818/tcp 22/tcp
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 ################################################################################
 FROM base AS slurmdbd
@@ -257,7 +257,7 @@ rm *.deb && rm *.ddeb
 EOR
 
 EXPOSE 6819/tcp
-ENTRYPOINT ["tini", "-g", "--", "slurmdbd", "-D"]
+ENTRYPOINT ["/usr/bin/tini", "-g", "--", "/usr/sbin/slurmdbd", "-D"]
 
 ################################################################################
 FROM base AS slurmrestd
@@ -285,7 +285,7 @@ rm *.deb && rm *.ddeb
 EOR
 
 EXPOSE 6820/tcp
-ENTRYPOINT ["tini", "-g", "--", "slurmrestd"]
+ENTRYPOINT ["/usr/bin/tini", "-g", "--", "/usr/sbin/slurmrestd"]
 CMD ["0.0.0.0:6820"]
 
 ################################################################################
@@ -343,12 +343,12 @@ EOR
 COPY files/etc/supervisor/supervisord.conf /etc/supervisor/
 COPY \
   files/etc/supervisor/conf.d/sackd.conf \
-  files/etc/supervisor/conf.d/fakesystemd-slurm.conf \
+  files/etc/supervisor/conf.d/fakesystemd.conf \
   /etc/supervisor/conf.d/
 COPY files/usr/local/bin/fakesystemd.sh /usr/local/bin/
 COPY files/usr/local/bin/sackd-entrypoint.sh /usr/local/bin/entrypoint.sh
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 ################################################################################
 FROM sackd AS login
@@ -369,8 +369,8 @@ apt-get -qq update
 apt-get -qq -y install --no-install-recommends \
   socat \
   openssh-server \
-  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
-  krb5-pkinit libpam-sss libnss-sss
+  authselect sssd sssd-ad sssd-idp sssd-ipa sssd-krb5 sssd-ldap \
+  krb5-pkinit
 # Configure
 mkdir -p /etc/authselect
 authselect create-profile slinky -b sssd
@@ -381,7 +381,7 @@ EOR
 
 COPY files/etc/supervisor/supervisord.conf /etc/supervisor/
 COPY \
-  files/etc/supervisor/conf.d/fakesystemd-slurm.conf \
+  files/etc/supervisor/conf.d/fakesystemd.conf \
   files/etc/supervisor/conf.d/sackd.conf \
   files/etc/supervisor/conf.d/sshd.conf \
   files/etc/supervisor/conf.d/sssd.conf \
@@ -390,4 +390,4 @@ COPY files/usr/local/bin/fakesystemd.sh /usr/local/bin/
 COPY files/usr/local/bin/login-entrypoint.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 22/tcp
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

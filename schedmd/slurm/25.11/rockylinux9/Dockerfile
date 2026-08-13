@@ -155,7 +155,7 @@ RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked <<EOR
 set -xeuo pipefail
 dnf -q -y install --setopt='install_weak_deps=False' \
   socat \
-  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
+  authselect sssd sssd-ad sssd-idp sssd-ipa sssd-krb5 sssd-ldap \
   krb5-pkinit \
   ./slurm-slurmctld-[0-9]*.rpm \
   ./slurm-[0-9]*.rpm
@@ -169,14 +169,14 @@ EOR
 COPY files/etc/supervisord.conf /etc/
 COPY \
   files/etc/supervisord.d/slurmctld.ini \
-  files/etc/supervisord.d/fakesystemd-slurm.ini \
+  files/etc/supervisord.d/fakesystemd.ini \
   files/etc/supervisord.d/sssd.ini \
   /etc/supervisord.d/
 COPY files/usr/local/bin/fakesystemd.sh /usr/local/bin/
 COPY files/usr/local/bin/slurmctld-entrypoint.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 6817/tcp
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 ################################################################################
 FROM base-extra AS slurmd
@@ -193,7 +193,7 @@ set -xeuo pipefail
 dnf -q -y install --setopt='install_weak_deps=False' \
   gawk socat \
   openssh-server \
-  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
+  authselect sssd sssd-ad sssd-idp sssd-ipa sssd-krb5 sssd-ldap \
   krb5-pkinit \
   ./slurm-devel-[0-9]*.rpm \
   ./slurm-libpmi-[0-9]*.rpm \
@@ -222,7 +222,7 @@ COPY files/usr/local/bin/fakesystemd.sh /usr/local/bin/
 COPY files/usr/local/bin/slurmd-entrypoint.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 6818/tcp 22/tcp
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 ################################################################################
 FROM base AS slurmdbd
@@ -243,7 +243,7 @@ rm *.rpm
 EOR
 
 EXPOSE 6819/tcp
-ENTRYPOINT ["tini", "-g", "--", "slurmdbd", "-D"]
+ENTRYPOINT ["/usr/bin/tini", "-g", "--", "/usr/sbin/slurmdbd", "-D"]
 
 ################################################################################
 FROM base AS slurmrestd
@@ -264,7 +264,7 @@ rm *.rpm
 EOR
 
 EXPOSE 6820/tcp
-ENTRYPOINT ["tini", "-g", "--", "slurmrestd"]
+ENTRYPOINT ["/usr/bin/tini", "-g", "--", "/usr/sbin/slurmrestd"]
 CMD ["0.0.0.0:6820"]
 
 ################################################################################
@@ -311,12 +311,12 @@ EOR
 COPY files/etc/supervisord.conf /etc/
 COPY \
   files/etc/supervisord.d/sackd.ini \
-  files/etc/supervisord.d/fakesystemd-slurm.ini \
+  files/etc/supervisord.d/fakesystemd.ini \
   /etc/supervisord.d/
 COPY files/usr/local/bin/fakesystemd.sh /usr/local/bin/
 COPY files/usr/local/bin/sackd-entrypoint.sh /usr/local/bin/entrypoint.sh
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 ################################################################################
 FROM sackd AS login
@@ -333,7 +333,7 @@ set -xeuo pipefail
 dnf -q -y install --setopt='install_weak_deps=False' \
   socat \
   openssh-server \
-  authselect sssd sssd-ad sssd-ipa sssd-krb5 sssd-ldap sssd-idp \
+  authselect sssd sssd-ad sssd-idp sssd-ipa sssd-krb5 sssd-ldap \
   krb5-pkinit
 # Configure
 mkdir -p /etc/authselect
@@ -345,7 +345,7 @@ EOR
 
 COPY files/etc/supervisord.conf /etc/
 COPY \
-  files/etc/supervisord.d/fakesystemd-slurm.ini \
+  files/etc/supervisord.d/fakesystemd.ini \
   files/etc/supervisord.d/sackd.ini \
   files/etc/supervisord.d/sshd.ini \
   files/etc/supervisord.d/sssd.ini \
@@ -354,4 +354,4 @@ COPY files/usr/local/bin/fakesystemd.sh /usr/local/bin/
 COPY files/usr/local/bin/login-entrypoint.sh /usr/local/bin/entrypoint.sh
 
 EXPOSE 22/tcp
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
