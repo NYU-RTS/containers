@@ -1,0 +1,30 @@
+apiVersion: shipwright.io/v1beta1
+kind: Build
+metadata:
+  name: slurmctld
+  namespace: rtc-builds
+spec:
+  output:
+    annotations:
+      org.opencontainers.image.source: 'https://github.com/NYU-RTS/containers'
+      org.opencontainers.image.url: 'https://registry.cloud.rt.nyu.edu/repository/nyu-rts/slinky-containers/slurmctld'
+    image: registry.cloud.rt.nyu.edu/nyu-rts/slinky-containers/slurmctld
+    labels:
+      description: Slurm Control Plane (slurmctld)
+      maintainer: hsys@nyu.edu
+    pushSecret: rtc-registry-secret
+  paramValues:
+    - name: dockerfile
+      value: 'Dockerfile'
+    - name: target
+      value: 'slurmctld'
+  source:
+    contextDir: schedmd/slurm/26.05/ubuntu26.04
+    git:
+      cloneSecret: github-rtc-builds
+      revision: nyu-main
+      url: 'https://github.com/NYU-RTS/containers.git'
+    type: Git
+  strategy:
+    kind: ClusterBuildStrategy
+    name: buildah

@@ -1,0 +1,80 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: shipwright-run
+  annotations:
+    pipelinesascode.tekton.dev/on-event: "push"
+    pipelinesascode.tekton.dev/on-target-branch: "nyu-main"
+    pipelinesascode.tekton.dev/task: "https://github.com/nyu-rts/rtc-tekton-resources/blob/main/tasks/shipwright-trigger.yaml"
+    pipelinesascode.tekton.dev/task-1: "https://github.com/nyu-rts/rtc-tekton-resources/blob/main/tasks/slack-notification.yaml"
+spec:
+  params:
+    - name: repo_name
+      value: "{{repo_name}}"
+    - name: revision
+      value: "{{revision}}"
+    - name: repo_url
+      value: "{{repo_url}}"
+    - name: build_resource_name
+      value: "slurmctld"
+    - name: build_namespace
+      value: "rtc-builds"
+    - name: output_image
+      value: "registry.cloud.rt.nyu.edu/nyu-rts/slinky-containers/slurmctld"
+    - name: tag_type
+      value: "sha"
+  pipelineSpec:
+    params:
+      - name: repo_name
+      - name: revision
+      - name: repo_url
+      - name: output_image
+      - name: tag_type
+      - name: build_resource_name
+      - name: build_namespace
+    tasks:
+      - name: trigger-build
+        taskRef:
+          name: shipwright-trigger
+        params:
+          - name: repo_name
+            value: "$(params.repo_name)"
+          - name: revision
+            value: "$(params.revision)"
+          - name: build_target
+            value: "$(params.build_resource_name)"
+          - name: target_namespace
+            value: "$(params.build_namespace)"
+          - name: output_image
+            value: "$(params.output_image)"
+          - name: tag_type
+            value: "$(params.tag_type)"
+    finally:
+      - name: notify-slack
+        taskRef:
+          name: slack-notification
+        params:
+          - name: message
+            value: "Automatic build triggered by {{sender}} via PAC."
+          - name: pipeline-run-name
+            value: "$(context.pipelineRun.name)"
+          - name: namespace
+            value: "$(context.pipelineRun.namespace)"
+          - name: repo-url
+            value: "$(params.repo_url)"
+          - name: repo-name
+            value: "$(params.repo_name)"
+          - name: notification-type
+            value: "$(tasks.status)"
+          - name: build-resource-name
+            value: "$(params.build_resource_name)"
+          - name: build-namespace
+            value: "$(params.build_namespace)"
+          - name: tag_type
+            value: "$(params.tag_type)"
+          - name: output_image
+            value: "$(params.output_image)"
+          - name: sha
+            value: "{{revision}}"
+          - name: target_branch
+            value: "{{target_branch}}"
