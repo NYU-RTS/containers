@@ -28,3 +28,4 @@ spec:
   strategy:
     kind: ClusterBuildStrategy
     name: buildah
+
