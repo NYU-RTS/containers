@@ -138,6 +138,10 @@ function main() {
 	mkdir -p /var/spool/slurmd/
 	mkdir -p /run/sshd/
 	chmod 0755 /run/sshd/
+	# sssd's postinst creates /run/sssd/ at build time, but /run doesn't
+	# persist into the running container -- same reasoning as /run/sshd/
+	# above. Without this sssd fails to write its pidfile and loops FATAL.
+	mkdir -p /run/sssd/
 
 	ssh-keygen -A
 	configure_pam_slurm
