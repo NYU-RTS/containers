@@ -160,6 +160,19 @@ rm *.deb && rm *.ddeb
 mkdir -p /etc/authselect
 authselect create-profile slinky -b sssd
 authselect select custom/slinky --force
+# NYU-RTS: the /etc/supervisor/conf.d/slurmctld.conf unit (unmodified,
+# see below) drops the actual slurmctld process from root to `slurm` --
+# deliberately kept, matching Slurm's own preference not to run the
+# scheduler daemon as root. Sites that run this pod's SecurityContext
+# with fsGroup=0 (root) instead of the upstream default (needed
+# elsewhere, e.g. to satisfy sssd's own root:root config ownership
+# check) end up with /etc/slurm/* group-owned by root instead of
+# `slurm`'s own gid -- without this, `slurm` (uid 401) loses read access
+# to its own slurm.conf/slurm.key once that happens. Adding `slurm` as a
+# supplementary member of `root` preserves privilege separation for the
+# daemon itself (still uid 401, never root) while letting it read
+# root-group-owned config.
+usermod -aG root slurm
 EOR
 
 COPY files/etc/supervisor/supervisord.conf /etc/supervisor/
