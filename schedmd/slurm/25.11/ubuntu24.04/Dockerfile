@@ -4,8 +4,8 @@
 
 ################################################################################
 
-ARG SLURM_VERSION=25.11.7
-ARG SLURM_VERSION_ARCHIVE=slurm-25-11-7-1
+ARG SLURM_VERSION=25.11.8
+ARG SLURM_VERSION_ARCHIVE=slurm-25-11-8-1
 ARG SLURM_DIR=slurm
 ARG PARENT_IMAGE=ubuntu:24.04
 
