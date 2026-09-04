@@ -12,7 +12,6 @@ variable "SUFFIX" {}
 ################################################################################
 
 slurm_version = "master"
-slurm_version_micro = "1"
 slurm_dir = slurm_version(slurm_version)
 linux_flavor = "rockylinux9"
 context = "${slurm_dir}/${linux_flavor}"
